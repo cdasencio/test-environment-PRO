@@ -746,6 +746,8 @@ let paymentStarted = localStorage.getItem(PAYMENT_STARTED_KEY) === "yes";
 let paymentPlan = localStorage.getItem(PAYMENT_PLAN_KEY) || "";
 let activePlan = localStorage.getItem(ACTIVE_PLAN_KEY) || (isPro ? paymentPlan : "");
 const HISTORY_KEY = "gemradar_token_history_v2";
+const LOCAL_API_BASE = "http://127.0.0.1:8787";
+let localApiState = { mode: "FALLBACK", lastMessage: "" };
 
 const GEMRADAR_CONFIG = {
   version: "pro-plus-institutional",
@@ -1968,6 +1970,199 @@ function noteApiSuccess() {
   apiHealth.openUntil = 0;
 }
 
+function apiDemoSignalToToken(item) {
+  const token = item.token || {};
+  const pool = item.pool || {};
+  const snapshot = item.snapshot || {};
+  const score = item.score || item;
+  const opportunity = clamp(safeNumber(score.opportunityScore || item.opportunityScore), 0, 100);
+  const risk = clamp(safeNumber(score.riskScore || item.riskScore), 0, 100);
+  const confidence = clamp(safeNumber(score.dataConfidenceScore || item.dataConfidenceScore), 0, 100);
+  const liq = Math.max(0, safeNumber(snapshot.liquidityUsd));
+  const vol = Math.max(0, safeNumber(snapshot.volume24h));
+  const buys = Math.max(0, safeNumber(snapshot.buys24h));
+  const sells = Math.max(0, safeNumber(snapshot.sells24h));
+  const txTotal = buys + sells;
+  const buyRatio = txTotal ? buys / txTotal : 0.5;
+  const ai = clamp(Math.round(opportunity / 10), 0, 10);
+  const risk10 = clamp(Math.round(risk / 10), 0, 10);
+  const confidence10 = clamp(Math.round(confidence / 10), 0, 10);
+  const state = cleanText(item.newSignal || "WATCH");
+  const positiveReasons = Array.isArray(item.positiveReasons) ? item.positiveReasons : ["demo_api_signal"];
+  const negativeReasons = Array.isArray(item.negativeReasons) ? item.negativeReasons : [];
+  const missingDataReasons = Array.isArray(item.missingData) ? item.missingData : [];
+
+  return {
+    name: cleanText(token.symbol || token.name || "DEMO"),
+    price: Math.max(0, safeNumber(snapshot.priceUsd)),
+    liq,
+    vol,
+    chg: 0,
+    age: 0,
+    address: cleanText(token.tokenAddress || item.eventKey || item.id || "demo-token"),
+    dex: cleanText(pool.dex || "DEMO"),
+    ai,
+    scoreIA: ai,
+    early: clamp(Math.round((opportunity * 0.55 + confidence * 0.25 + Math.max(0, 100 - risk) * 0.2) / 10), 0, 10),
+    earlyScore: opportunity,
+    micro: clamp(Math.round((opportunity * 0.45 + Math.max(0, 100 - risk) * 0.35 + confidence * 0.2) / 10), 0, 10),
+    microScore: opportunity,
+    whale: buyRatio >= 0.62 && confidence >= 70 && risk <= 55,
+    confidence: confidence10,
+    confidenceScore: confidence,
+    risk: risk10,
+    riskScore: risk,
+    priority: clamp(Math.round((opportunity * 0.55 + confidence * 0.25 + Math.max(0, 100 - risk) * 0.2) / 10), 0, 10),
+    finalGemScore: opportunity,
+    buyRatio,
+    txTotal,
+    profile: "DEMO API - Heuristic scoring model",
+    phase: state,
+    confirmations: state === "POTENTIAL_OPPORTUNITY" ? 3 : 1,
+    accumulationScore: clamp(Math.round((buyRatio * 65 + confidence * 0.35)), 0, 100),
+    momentumScore: clamp(Math.round(opportunity * 0.65), 0, 100),
+    earlyMomentumScore: clamp(Math.round(opportunity * 0.65), 0, 100),
+    momentumAccelerationScore: 0,
+    momentumPersistenceScore: confidence,
+    liquidityHealthScore: liq > 0 ? clamp(Math.round(Math.log10(liq + 1) * 18), 0, 100) : 0,
+    volumeQualityScore: vol > 0 ? clamp(Math.round(Math.log10(vol + 1) * 17), 0, 100) : 0,
+    transactionStructureScore: clamp(Math.round(buyRatio * 100), 0, 100),
+    continuationScore: confidence,
+    marketQualityScore: clamp(Math.round((confidence + Math.max(0, 100 - risk)) / 2), 0, 100),
+    smartMoneyScore: buyRatio >= 0.62 ? clamp(Math.round(buyRatio * confidence), 0, 100) : 0,
+    manipulationRiskScore: risk,
+    distributionRiskScore: risk,
+    contractRiskScore: missingDataReasons.length ? 55 : 35,
+    overextensionRiskScore: 25,
+    botDominanceRiskScore: risk,
+    falseBreakoutRiskScore: risk,
+    breakoutReadinessScore: opportunity,
+    breakoutConfirmationScore: confidence,
+    consensusScore: confidence10,
+    consensusCount: 1,
+    breakoutProbabilityScore: opportunity,
+    dataQualityScore: confidence,
+    state,
+    segment: "DEMO",
+    alertSuppressed: confidence < 55 || risk > 75,
+    positiveReasons,
+    negativeReasons,
+    riskReasons: negativeReasons,
+    confirmationReasons: positiveReasons,
+    invalidationReasons: Array.isArray(item.invalidationConditions) ? item.invalidationConditions : [],
+    missingDataReasons
+  };
+}
+
+function apiScoringItemToToken(item) {
+  const opportunity = clamp(safeNumber(item.opportunityScore), 0, 100);
+  const risk = clamp(safeNumber(item.riskScore), 0, 100);
+  const confidence = clamp(safeNumber(item.dataConfidenceScore), 0, 100);
+  const ai = clamp(Math.round(opportunity / 10), 0, 10);
+  const risk10 = clamp(Math.round(risk / 10), 0, 10);
+  const confidence10 = clamp(Math.round(confidence / 10), 0, 10);
+  const signal = cleanText(item.signal || "WATCH");
+  const reasons = Array.isArray(item.positiveReasons) ? item.positiveReasons : ["scoring_v1_signal"];
+  const negatives = Array.isArray(item.negativeReasons) ? item.negativeReasons : [];
+  const missing = Array.isArray(item.missingData) ? item.missingData : [];
+  const buyShare = clamp(safeNumber(item.inputMetrics?.opportunityParts?.buyBalance), 0, 1);
+  const priority = clamp(Math.round((opportunity * 0.58 + confidence * 0.22 + Math.max(0, 100 - risk) * 0.2) / 10), 0, 10);
+
+  return {
+    name: cleanText(item.symbol || "API"),
+    price: 0,
+    liq: 0,
+    vol: 0,
+    chg: 0,
+    age: 0,
+    address: cleanText(item.tokenAddress || item.pairAddress || "api-scoring-token"),
+    dex: "API V1",
+    ai,
+    scoreIA: ai,
+    early: clamp(Math.round((opportunity * 0.5 + confidence * 0.25 + Math.max(0, 100 - risk) * 0.25) / 10), 0, 10),
+    earlyScore: opportunity,
+    micro: clamp(Math.round((opportunity * 0.42 + Math.max(0, 100 - risk) * 0.38 + confidence * 0.2) / 10), 0, 10),
+    microScore: opportunity,
+    whale: signal === "POTENTIAL_OPPORTUNITY" && confidence >= 70 && risk <= 45,
+    confidence: confidence10,
+    confidenceScore: confidence,
+    risk: risk10,
+    riskScore: risk,
+    priority,
+    finalGemScore: opportunity,
+    buyRatio: buyShare || 0.5,
+    txTotal: 0,
+    profile: "API REAL - Heuristic scoring model",
+    phase: signal,
+    confirmations: signal === "POTENTIAL_OPPORTUNITY" ? 4 : signal === "TRACKING" ? 2 : 1,
+    accumulationScore: clamp(Math.round(opportunity * 0.55), 0, 100),
+    momentumScore: opportunity,
+    earlyMomentumScore: opportunity,
+    momentumAccelerationScore: 0,
+    momentumPersistenceScore: confidence,
+    liquidityHealthScore: clamp(Math.round(opportunity * 0.7), 0, 100),
+    volumeQualityScore: clamp(Math.round(opportunity * 0.65), 0, 100),
+    transactionStructureScore: clamp(Math.round(confidence * 0.85), 0, 100),
+    continuationScore: confidence,
+    marketQualityScore: clamp(Math.round((opportunity + confidence + Math.max(0, 100 - risk)) / 3), 0, 100),
+    smartMoneyScore: signal === "POTENTIAL_OPPORTUNITY" ? clamp(Math.round(confidence * 0.62), 0, 100) : 0,
+    manipulationRiskScore: risk,
+    distributionRiskScore: risk,
+    contractRiskScore: missing.includes("contract_security_blocked") ? 65 : 35,
+    overextensionRiskScore: risk,
+    botDominanceRiskScore: risk,
+    falseBreakoutRiskScore: risk,
+    breakoutReadinessScore: opportunity,
+    breakoutConfirmationScore: confidence,
+    consensusScore: confidence10,
+    consensusCount: 1,
+    breakoutProbabilityScore: opportunity,
+    dataQualityScore: confidence,
+    state: signal,
+    segment: "REAL_API",
+    alertSuppressed: confidence < 45 || risk >= 78,
+    positiveReasons: reasons,
+    negativeReasons: negatives,
+    riskReasons: negatives,
+    confirmationReasons: reasons,
+    invalidationReasons: Array.isArray(item.invalidationConditions) ? item.invalidationConditions : [],
+    missingDataReasons: missing
+  };
+}
+
+async function readLocalApiSignals() {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 1800);
+  try {
+    const scoringResponse = await fetch(`${LOCAL_API_BASE}/api/v1/scoring/v1?limit=40`, { signal: controller.signal });
+    if (scoringResponse.ok) {
+      const scoringData = await scoringResponse.json();
+      if (scoringData.dataMode === "REAL" && Array.isArray(scoringData.items) && scoringData.items.length) {
+        localApiState = { mode: "REAL", lastMessage: `API REAL V1 conectada: ${scoringData.items.length} score(s)` };
+        return scoringData.items.map(apiScoringItemToToken).filter(t => Number.isFinite(t.ai) && Number.isFinite(t.priority));
+      }
+    }
+
+    const response = await fetch(`${LOCAL_API_BASE}/api/v1/signals`, { signal: controller.signal });
+    if (!response.ok) {
+      localApiState = { mode: "FALLBACK", lastMessage: `API local ${response.status}` };
+      return [];
+    }
+    const data = await response.json();
+    if (data.dataMode !== "DEMO" || !Array.isArray(data.items) || !data.items.length) {
+      localApiState = { mode: "FALLBACK", lastMessage: "API local sin senales DEMO" };
+      return [];
+    }
+    localApiState = { mode: "DEMO", lastMessage: `API DEMO conectada: ${data.items.length} senal(es)` };
+    return data.items.map(apiDemoSignalToToken).filter(t => Number.isFinite(t.ai) && Number.isFinite(t.priority));
+  } catch (error) {
+    localApiState = { mode: "FALLBACK", lastMessage: "API local no disponible" };
+    return [];
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function runDetector() {
   if (detectorRunning) return;
   if (Date.now() < apiHealth.openUntil) {
@@ -1980,6 +2175,16 @@ async function runDetector() {
   const all = [];
 
   try {
+    const apiTokens = await readLocalApiSignals();
+    if (apiTokens.length) {
+      tokens = apiTokens;
+      cleanTokenHistory();
+      saveTokenHistory();
+      render();
+      el.status.textContent = localApiState.lastMessage;
+      return;
+    }
+
     const now = Date.now();
     if (requestCache.pairs.length && now - requestCache.at < GEMRADAR_CONFIG.api.cacheMs) {
       all.push(...requestCache.pairs);
