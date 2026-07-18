@@ -12,3 +12,4 @@ Notas:
 - GitHub Pages no ejecuta el backend local de Node.js.
 - Si la API local no esta disponible, la pagina conserva el fallback del detector en navegador.
 - No subas archivos `.env` ni claves privadas al repositorio.
+- Contacto y soporte oficial: `gemradarai@gmail.com`.

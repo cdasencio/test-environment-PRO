@@ -127,6 +127,11 @@ a { color: inherit; }
 .btn-ghost { background: #203029; color: var(--text); border: 1px solid var(--line); }
 .btn-blue { background: var(--cyan); color: #03101b; }
 .btn-danger { background: #3a2023; color: #ffd6d6; border: 1px solid #6e383e; }
+.paypal-locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: saturate(0.72);
+}
 
 select, input {
   min-height: 42px;
@@ -242,6 +247,31 @@ select, input {
   margin: 16px 0;
 }
 
+.terms-consent {
+  margin: 14px 0 0;
+  border: 1px solid rgba(242, 184, 75, 0.55);
+  border-radius: 8px;
+  background: rgba(45, 35, 13, 0.72);
+  color: #fff0be;
+  padding: 12px 14px;
+}
+
+.terms-consent label {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.terms-consent input {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  accent-color: var(--green);
+  flex: 0 0 auto;
+}
+
 .donation-callout {
   margin-top: 28px;
   padding: 18px;
@@ -268,6 +298,93 @@ select, input {
 .donation-callout .btn {
   min-width: 190px;
   text-align: center;
+}
+
+.support-box {
+  margin-top: 28px;
+  padding: 18px;
+  background: rgba(9, 32, 24, 0.82);
+  border: 1px solid rgba(53, 208, 127, 0.42);
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.8fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.support-box h2 {
+  margin: 0 0 6px;
+  color: #eafff2;
+}
+
+.support-box p {
+  margin: 0 0 10px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.support-email {
+  color: var(--green) !important;
+  font-weight: 800;
+}
+
+.support-email a {
+  color: var(--green);
+  text-decoration: none;
+}
+
+.support-form {
+  display: grid;
+  gap: 10px;
+}
+
+.support-form textarea {
+  width: 100%;
+  min-height: 92px;
+  resize: vertical;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  padding: 12px;
+  font: inherit;
+}
+
+.legal-box {
+  margin-top: 28px;
+  padding: 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(8, 14, 13, 0.84);
+  color: #cfe0d8;
+  line-height: 1.55;
+}
+
+.legal-box h2 {
+  margin: 0 0 8px;
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.legal-box p {
+  margin: 8px 0;
+}
+
+.legal-box ul {
+  margin: 10px 0 0;
+  padding-left: 20px;
+}
+
+.legal-box li {
+  margin: 6px 0;
+}
+
+.legal-copy {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  color: #9fb4aa;
+  font-size: 13px;
 }
 
 .donation-strip {
@@ -542,7 +659,7 @@ tr:last-child td { border-bottom: 0; }
 .pill.free { background: rgba(77, 183, 255, 0.18); color: #b7ddff; }
 
 @media (max-width: 820px) {
-  .topbar, .hero, .access-box, .donation-callout { grid-template-columns: 1fr; display: grid; }
+  .topbar, .hero, .access-box, .donation-callout, .support-box { grid-template-columns: 1fr; display: grid; }
   .donation-strip { flex-direction: column; align-items: stretch; }
   .top-actions, .access-actions { justify-content: stretch; }
   .header-buy, .header-donate { min-width: 0; text-align: center; }
@@ -618,13 +735,20 @@ tr:last-child td { border-bottom: 0; }
     </div>
 
     <div class="notice only-free" id="freeNotice">
-      Versión Free: vista limitada. Para desbloquear PRO, elige una opción, completa el pago en PayPal y vuelve a pulsar el botón para completar la activación.
+      Versión Free: vista limitada. Para desbloquear PRO, primero marca el checkbox de términos justo antes de pagar, elige una opción, completa el pago en PayPal y vuelve a pulsar el botón para completar la activación.
+    </div>
+
+    <div class="terms-consent" id="termsConsentBox">
+      <label for="termsConsent">
+        <input id="termsConsent" type="checkbox">
+        <span id="termsConsentLabel">Antes de pagar o donar por PayPal, debo marcar esta casilla para confirmar que leí y entendí los términos, condiciones, política de privacidad y aviso de riesgo. Acepto que GemRadar AI no es consejo financiero.</span>
+      </label>
     </div>
 
     <section class="access-box" id="accessBox">
       <div>
         <h2 id="accessTitle">Planes PRO</h2>
-        <p id="accessText">Pulsa una opción para ir a PayPal. Después de completar el pago, regresa a esta página y pulsa el botón una segunda vez para completar la activación.</p>
+        <p id="accessText">Dinámica: marca el checkbox de términos justo antes de pagar, pulsa una opción para ir a PayPal, completa el pago y regresa a esta página para pulsar el botón una segunda vez y activar PRO.</p>
       </div>
       <div class="access-options">
         <div class="access-option complete-option">
@@ -722,12 +846,67 @@ tr:last-child td { border-bottom: 0; }
       </div>
     </section>
 
+    <section class="support-box" id="supportBox">
+      <div>
+        <h2 id="supportTitle">Preguntas y soporte</h2>
+        <p id="supportText">¿Tienes preguntas sobre FREE, PRO, señales o activación? Nuestro contacto y soporte oficial es:</p>
+        <p class="support-email"><a id="supportEmail" href="mailto:gemradarai@gmail.com">gemradarai@gmail.com</a></p>
+      </div>
+      <form class="support-form" id="supportForm">
+        <textarea id="supportQuestion" placeholder="Escribe tu pregunta o comentario..."></textarea>
+        <button class="btn" id="supportSubmit" type="submit">Enviar pregunta a soporte</button>
+      </form>
+    </section>
+
     <section class="donation-callout" id="donationCallout">
       <div>
         <h2 id="donateTitle">Apoya las iniciativas positivas</h2>
         <p id="donateNotice">Si la versión FREE te ha ayudado, una donación mantiene vivo el detector y ayuda a seguir mejorándolo.</p>
       </div>
       <a class="btn btn-donate" id="donateCta" href="https://www.paypal.com/ncp/payment/SW4W7QJKDWLCS" target="_blank" rel="noopener">Donar ahora</a>
+    </section>
+
+    <section class="legal-box" id="privacyPolicy"></section>
+
+    <section class="legal-box" id="legalAddendum"></section>
+
+    <section class="legal-box" id="legalTermsFull">
+      <h2>Términos ampliados, condiciones de uso y exención de responsabilidad</h2>
+      <p><strong>GemRadar AI es una herramienta informativa, educativa y de análisis heurístico.</strong> Las señales, rankings, lecturas, alertas, puntuaciones, métricas, filtros, etiquetas, gráficos, resultados y cualquier información mostrada no constituyen asesoría financiera, asesoría de inversión, asesoría legal, asesoría fiscal, recomendación personalizada, oferta de compra, oferta de venta, intermediación, administración de fondos, gestión de cartera ni invitación a operar con criptomonedas, tokens, valores, derivados u otros activos.</p>
+      <p><strong>Decisión independiente del usuario.</strong> Cada usuario es el único responsable de investigar, verificar, decidir, comprar, vender, mantener, transferir o ignorar cualquier activo. GemRadar AI no conoce la situación financiera, experiencia, país, objetivos, obligaciones fiscales, tolerancia al riesgo ni necesidades particulares de cada persona.</p>
+      <ul>
+        <li><strong>Sin garantías:</strong> no garantizamos ganancias, rentabilidad, exactitud absoluta, disponibilidad permanente, detección perfecta, prevención de fraudes, continuidad del servicio ni resultados futuros.</li>
+        <li><strong>Riesgo total:</strong> criptomonedas, memecoins, micro caps, pools nuevos y tokens emergentes pueden ser extremadamente volátiles, ilíquidos, especulativos, manipulables y pueden perder el 100% de su valor.</li>
+        <li><strong>No predicción infalible:</strong> Early, Smart Money, Riesgo, Ranking, Máxima Alerta, Micro Gems y otras métricas son cálculos heurísticos. No son probabilidades científicamente calibradas ni promesas de resultado.</li>
+        <li><strong>Datos de terceros:</strong> la herramienta puede usar APIs, fuentes públicas, mercados o proveedores externos. Esos datos pueden retrasarse, fallar, cambiar, duplicarse, estar incompletos o ser incorrectos.</li>
+        <li><strong>Seguridad no garantizada:</strong> esta herramienta no sustituye auditorías de contrato, revisión de honeypot, impuestos, ownership, mint/freeze authority, liquidez bloqueada, holders, wallets del creador ni análisis legal del token.</li>
+        <li><strong>Pagos y donaciones:</strong> cualquier pago, donación o activación PRO/Lifetime da acceso a funciones informativas. No compra rendimientos, señales garantizadas, asesoría personalizada ni resultados financieros.</li>
+        <li><strong>Sin custodia:</strong> GemRadar AI no custodia fondos, no solicita claves privadas, no recupera pérdidas, no ejecuta compras o ventas automáticas y no administra dinero de usuarios.</li>
+        <li><strong>Uso prohibido:</strong> queda prohibido copiar, clonar, revender, redistribuir, automatizar abusivamente, explotar comercialmente, modificar o reproducir total o parcialmente esta herramienta sin autorización escrita.</li>
+        <li><strong>Limitación de responsabilidad:</strong> GemRadar AI, sus creadores, operadores, colaboradores, proveedores y canales de soporte no serán responsables por pérdidas directas, indirectas, incidentales, especiales, tecnológicas, fiscales, legales, comerciales o financieras derivadas del uso o imposibilidad de uso de la herramienta.</li>
+        <li><strong>Indemnidad:</strong> el usuario acepta mantener indemne a GemRadar AI y sus responsables frente a reclamos, cargos, contracargos, daños, disputas, pérdidas, gastos o reclamaciones de terceros derivadas del uso de la página o de decisiones tomadas por el usuario.</li>
+        <li><strong>Investigación propia:</strong> antes de actuar, verifica contrato, liquidez, volumen, holders, reputación, redes sociales, auditorías, permisos, historial, riesgos regulatorios y consulta asesores profesionales independientes cuando corresponda.</li>
+        <li><strong>Aceptación:</strong> al usar la página, funciones FREE, funciones PRO, rankings, alertas, pagos, donaciones, formularios o enlaces, aceptas estos términos y el aviso de riesgo completo.</li>
+      </ul>
+      <p><strong>Advertencia práctica:</strong> ningún sistema serio puede garantizar ganancias ni eliminar el riesgo. Si una oportunidad parece urgente, secreta, segura o demasiado buena, investiga con más cuidado. Nunca arriesgues dinero que no puedas permitirte perder.</p>
+      <p>Contacto y soporte oficial: <a href="mailto:gemradarai@gmail.com">gemradarai@gmail.com</a></p>
+      <div class="legal-copy">© 2025 GemRadar AI - Detector de Gemas Cripto, análisis, alertas y herramientas informativas. Todos los derechos reservados. Queda prohibida la reproducción total o parcial, copia, venta, distribución, modificación o explotación comercial sin autorización escrita.</div>
+    </section>
+
+    <section class="legal-box" id="legalTerms">
+      <h2>Términos, condiciones y aviso de riesgo</h2>
+      <p><strong>GemRadar AI es una herramienta informativa y educativa.</strong> Las señales, rankings, lecturas, alertas, puntuaciones, métricas, filtros y cualquier dato mostrado en esta página no constituyen asesoría financiera, asesoría de inversión, recomendación personalizada, oferta de compra, oferta de venta ni invitación a realizar operaciones con criptomonedas.</p>
+      <ul>
+        <li>El usuario es el único responsable de sus decisiones, operaciones, ganancias, pérdidas, investigación propia y manejo de riesgo.</li>
+        <li>Las criptomonedas, tokens nuevos, micro caps y proyectos emergentes pueden ser extremadamente volátiles, especulativos, ilíquidos y pueden perder la totalidad de su valor.</li>
+        <li>GemRadar AI no garantiza resultados, rentabilidad, exactitud absoluta, disponibilidad continua, detección perfecta, prevención de fraudes ni ausencia de errores.</li>
+        <li>Los datos pueden provenir de fuentes públicas o terceros como APIs de mercado. Dichas fuentes pueden fallar, retrasarse, cambiar, ser incompletas o mostrar información incorrecta.</li>
+        <li>Las métricas de Early, Smart Money, riesgo, ranking o alertas son modelos heurísticos y no predicciones infalibles ni probabilidades científicamente calibradas.</li>
+        <li>Antes de tomar cualquier decisión, consulta fuentes adicionales, verifica contratos, liquidez, seguridad, holders, historial del proyecto y, si corresponde, busca asesoría profesional independiente.</li>
+      </ul>
+      <p>Al usar esta herramienta, aceptas que GemRadar AI, sus creadores, operadores, colaboradores y canales de soporte no serán responsables por pérdidas directas, indirectas, incidentales, especiales, tecnológicas, financieras o de cualquier otro tipo derivadas del uso de la información presentada.</p>
+      <p>Contacto y soporte oficial: <a href="mailto:gemradarai@gmail.com">gemradarai@gmail.com</a></p>
+      <div class="legal-copy">© 2025 GemRadar AI – Detector de Gemas Cripto, análisis, alertas y herramientas informativas. Todos los derechos reservados. Queda prohibida la reproducción total o parcial sin autorización.</div>
     </section>
   </main>
 </div>
@@ -737,6 +916,7 @@ const PRO_KEY = "gemradar_pro_lifetime_access";
 const PAYMENT_STARTED_KEY = "gemradar_paypal_payment_started";
 const PAYMENT_PLAN_KEY = "gemradar_paypal_payment_plan";
 const ACTIVE_PLAN_KEY = "gemradar_active_plan";
+const TERMS_ACCEPTED_KEY = "gemradar_terms_accepted";
 let tokens = [];
 let pinned = JSON.parse(localStorage.getItem("gemradar_pinned") || "[]");
 let auto = false;
@@ -745,6 +925,7 @@ let isPro = localStorage.getItem(PRO_KEY) === "yes";
 let paymentStarted = localStorage.getItem(PAYMENT_STARTED_KEY) === "yes";
 let paymentPlan = localStorage.getItem(PAYMENT_PLAN_KEY) || "";
 let activePlan = localStorage.getItem(ACTIVE_PLAN_KEY) || (isPro ? paymentPlan : "");
+let termsAccepted = localStorage.getItem(TERMS_ACCEPTED_KEY) === "yes";
 const HISTORY_KEY = "gemradar_token_history_v2";
 const LOCAL_API_BASE = "http://127.0.0.1:8787";
 const LOCAL_API_ENABLED = location.protocol === "file:" || ["localhost", "127.0.0.1"].includes(location.hostname);
@@ -870,7 +1051,11 @@ const el = {
   pinInput: document.getElementById("pinInput"),
   countTokens: document.getElementById("countTokens"),
   countEarly: document.getElementById("countEarly"),
-  countWhales: document.getElementById("countWhales")
+  countWhales: document.getElementById("countWhales"),
+  supportForm: document.getElementById("supportForm"),
+  supportQuestion: document.getElementById("supportQuestion"),
+  termsConsent: document.getElementById("termsConsent"),
+  termsConsentLabel: document.getElementById("termsConsentLabel")
 };
 
 let currentLang = localStorage.getItem("gemradar_lang") || "es";
@@ -892,10 +1077,10 @@ const translations = {
     heroText: "Escanea tendencias de Dexscreener, detecta señales tempranas y deja las herramientas avanzadas listas para PRO. El usuario primero abre el pago por PayPal; después puede activar PRO directo desde esta misma página.",
     statusReady: "Listo",
     update: "Actualizar",
-    freeNotice: "Versión Free: vista limitada. Para desbloquear PRO, elige una opción, completa el pago en PayPal y vuelve a pulsar el botón para completar la activación.",
+    freeNotice: "Versión Free: vista limitada. Para desbloquear PRO, primero marca el checkbox de términos justo antes de pagar, elige una opción, completa el pago en PayPal y vuelve a pulsar el botón para completar la activación.",
     earlyNote: "Muestras principales disponibles en Free.",
     accessTitle: "Planes PRO",
-    accessText: "Pulsa una opción para ir a PayPal. Después de completar el pago, regresa a esta página y pulsa el botón una segunda vez para completar la activación.",
+    accessText: "Dinámica: marca el checkbox de términos justo antes de pagar, pulsa una opción para ir a PayPal, completa el pago y regresa a esta página para pulsar el botón una segunda vez y activar PRO.",
     completeTitle: "COMPRA ACCESO COMPLETO PRO - $5.99",
     completeText: "No dejes escapar early gems. Activa el motor profesional con Watchlist, Micro Gems, Smart Money completo, prioridad IA y ranking avanzado.",
     lifetimeTitle: "SUBE A PRO DE POR VIDA - $39.99",
@@ -918,6 +1103,14 @@ const translations = {
     donateTitle: "Apoya las iniciativas positivas",
     donateNotice: "Si la versión FREE te ha ayudado, una donación mantiene vivo el detector y ayuda a seguir mejorándolo.",
     donateCta: "Donar ahora",
+    supportTitle: "Preguntas y soporte",
+    supportText: "¿Tienes preguntas sobre FREE, PRO, señales o activación? Nuestro contacto y soporte oficial es:",
+    supportPlaceholder: "Escribe tu pregunta o comentario...",
+    supportSubmit: "Enviar pregunta a soporte",
+    supportSubject: "Pregunta de soporte GemRadar AI",
+    supportEmailFooter: "Contacto y soporte: gemradarai@gmail.com",
+    termsConsentLabel: "Antes de pagar o donar por PayPal, debo marcar esta casilla para confirmar que leí y entendí los términos, condiciones, política de privacidad y aviso de riesgo. Acepto que GemRadar AI no es consejo financiero.",
+    termsRequired: "Antes de continuar a PayPal debes marcar que has entendido los términos, condiciones, política de privacidad y aviso de riesgo.",
     donateStrip1: "¿La versión FREE te está sirviendo? Apóyanos con una donación para mantener este detector activo.",
     donateStrip2: "Cada donación ayuda a mejorar las señales, mantener la herramienta y apoyar iniciativas positivas.",
     donateStrip3: "Si sigues usando la versión FREE, considera donar. Tu apoyo hace posible que siga creciendo.",
@@ -965,10 +1158,10 @@ const translations = {
     heroText: "Scan Dexscreener trends, detect early signals, and keep advanced tools ready for PRO. The user opens PayPal first; then they can activate PRO directly from this same page.",
     statusReady: "Ready",
     update: "Update",
-    freeNotice: "Free version: limited view. To unlock PRO, choose an option, complete payment on PayPal, then press the button again to finish activation.",
+    freeNotice: "Free version: limited view. To unlock PRO, first check the terms checkbox right before paying, choose an option, complete payment on PayPal, then press the button again to finish activation.",
     earlyNote: "Main samples available in Free.",
     accessTitle: "PRO Plans",
-    accessText: "Choose an option to open PayPal. After completing payment, return to this page and press the button a second time to finish activation.",
+    accessText: "Flow: check the terms checkbox right before paying, choose an option to open PayPal, complete payment, then return to this page and press the button a second time to activate PRO.",
     completeTitle: "BUY FULL PRO ACCESS - $5.99",
     completeText: "Do not miss early gems. Activate the professional engine with Watchlist, Micro Gems, full Smart Money, AI priority, and advanced ranking.",
     lifetimeTitle: "UPGRADE TO LIFETIME PRO - $39.99",
@@ -991,6 +1184,14 @@ const translations = {
     donateTitle: "Support positive initiatives",
     donateNotice: "If the FREE version has helped you, a donation keeps the detector alive and helps us keep improving it.",
     donateCta: "Donate now",
+    supportTitle: "Questions and support",
+    supportText: "Questions about FREE, PRO, signals, or activation? Our official contact and support email is:",
+    supportPlaceholder: "Write your question or comment...",
+    supportSubmit: "Send question to support",
+    supportSubject: "GemRadar AI support question",
+    supportEmailFooter: "Contact and support: gemradarai@gmail.com",
+    termsConsentLabel: "Before paying or donating through PayPal, I must check this box to confirm that I read and understood the terms, conditions, privacy policy, and risk notice. I accept that GemRadar AI is not financial advice.",
+    termsRequired: "Before continuing to PayPal, you must confirm that you understand the terms, conditions, privacy policy, and risk notice.",
     donateStrip1: "Is the FREE version helping you? Support us with a donation to keep this detector active.",
     donateStrip2: "Every donation helps improve signals, maintain the tool, and support positive initiatives.",
     donateStrip3: "If you keep using the FREE version, consider donating. Your support makes continued growth possible.",
@@ -1038,10 +1239,10 @@ const translations = {
     heroText: "Escaneie tendências do Dexscreener, detecte sinais iniciais e mantenha as ferramentas avançadas prontas para PRO. O usuário abre o PayPal primeiro; depois ativa o PRO diretamente nesta mesma página.",
     statusReady: "Pronto",
     update: "Atualizar",
-    freeNotice: "Versão Free: visualização limitada. Para desbloquear PRO, escolha uma opção, conclua o pagamento no PayPal e volte a pressionar o botão para finalizar a ativação.",
+    freeNotice: "Versão Free: visualização limitada. Para desbloquear PRO, primeiro marque o checkbox de termos antes de pagar, escolha uma opção, conclua o pagamento no PayPal e volte a pressionar o botão para finalizar a ativação.",
     earlyNote: "Amostras principais disponíveis no Free.",
     accessTitle: "Planos PRO",
-    accessText: "Escolha uma opção para abrir o PayPal. Depois de concluir o pagamento, volte a esta página e pressione o botão pela segunda vez para finalizar a ativação.",
+    accessText: "Dinâmica: marque o checkbox de termos antes de pagar, escolha uma opção para abrir o PayPal, conclua o pagamento e volte a esta página para pressionar o botão pela segunda vez e ativar o PRO.",
     completeTitle: "COMPRE ACESSO COMPLETO PRO - $5.99",
     completeText: "Não deixe early gems escaparem. Ative o motor profissional com Watchlist, Micro Gems, Smart Money completo, prioridade IA e ranking avançado.",
     lifetimeTitle: "SUBA PARA PRO VITALÍCIO - $39.99",
@@ -1064,6 +1265,14 @@ const translations = {
     donateTitle: "Apoie iniciativas positivas",
     donateNotice: "Se a versão FREE ajudou você, uma doação mantém o detector vivo e ajuda a continuar melhorando.",
     donateCta: "Doar agora",
+    supportTitle: "Perguntas e suporte",
+    supportText: "Tem perguntas sobre FREE, PRO, sinais ou ativação? Nosso contato e suporte oficial é:",
+    supportPlaceholder: "Escreva sua pergunta ou comentário...",
+    supportSubmit: "Enviar pergunta ao suporte",
+    supportSubject: "Pergunta de suporte GemRadar AI",
+    supportEmailFooter: "Contato e suporte: gemradarai@gmail.com",
+    termsConsentLabel: "Antes de pagar ou doar pelo PayPal, devo marcar esta caixa para confirmar que li e entendi os termos, condições, política de privacidade e aviso de risco. Aceito que o GemRadar AI não é conselho financeiro.",
+    termsRequired: "Antes de continuar para o PayPal, você deve confirmar que entendeu os termos, condições, política de privacidade e aviso de risco.",
     donateStrip1: "A versão FREE está ajudando você? Apoie-nos com uma doação para manter este detector ativo.",
     donateStrip2: "Cada doação ajuda a melhorar os sinais, manter a ferramenta e apoiar iniciativas positivas.",
     donateStrip3: "Se você continua usando a versão FREE, considere doar. Seu apoio torna o crescimento possível.",
@@ -1111,10 +1320,10 @@ const translations = {
     heroText: "افحص اتجاهات Dexscreener واكتشف الإشارات المبكرة واجعل الأدوات المتقدمة جاهزة لـ PRO. يفتح المستخدم PayPal أولا، ثم يمكنه تفعيل PRO من نفس الصفحة.",
     statusReady: "جاهز",
     update: "تحديث",
-    freeNotice: "نسخة Free محدودة. لفتح PRO، اختر خيارا، أكمل الدفع في PayPal، ثم اضغط الزر مرة أخرى لإكمال التفعيل.",
+    freeNotice: "نسخة Free محدودة. لفتح PRO، حدد مربع قبول الشروط قبل الدفع مباشرة، اختر خيارا، أكمل الدفع في PayPal، ثم اضغط الزر مرة أخرى لإكمال التفعيل.",
     earlyNote: "العينات الرئيسية متاحة في Free.",
     accessTitle: "خطط PRO",
-    accessText: "اختر خيارا لفتح PayPal. بعد إكمال الدفع، ارجع إلى هذه الصفحة واضغط الزر مرة ثانية لإكمال التفعيل.",
+    accessText: "الخطوات: حدد مربع قبول الشروط قبل الدفع مباشرة، اختر خيارا لفتح PayPal، أكمل الدفع، ثم ارجع إلى هذه الصفحة واضغط الزر مرة ثانية لتفعيل PRO.",
     completeTitle: "اشتر وصول PRO الكامل - $5.99",
     completeText: "لا تفوت early gems. فعّل المحرك الاحترافي مع Watchlist و Micro Gems و Smart Money وأولوية IA والترتيب المتقدم.",
     lifetimeTitle: "ارتق إلى PRO مدى الحياة - $39.99",
@@ -1137,6 +1346,14 @@ const translations = {
     donateTitle: "ادعم المبادرات الإيجابية",
     donateNotice: "إذا ساعدتك نسخة FREE، فإن التبرع يبقي الكاشف مستمرا ويساعدنا على تحسينه.",
     donateCta: "تبرع الآن",
+    supportTitle: "الأسئلة والدعم",
+    supportText: "هل لديك أسئلة حول FREE أو PRO أو الإشارات أو التفعيل؟ بريد التواصل والدعم الرسمي هو:",
+    supportPlaceholder: "اكتب سؤالك أو تعليقك...",
+    supportSubmit: "إرسال السؤال إلى الدعم",
+    supportSubject: "سؤال دعم GemRadar AI",
+    supportEmailFooter: "التواصل والدعم: gemradarai@gmail.com",
+    termsConsentLabel: "قبل الدفع أو التبرع عبر PayPal، يجب تحديد هذا المربع لتأكيد قراءة وفهم الشروط والأحكام وسياسة الخصوصية وتحذير المخاطر. أوافق على أن GemRadar AI ليس نصيحة مالية.",
+    termsRequired: "قبل المتابعة إلى PayPal، يجب تأكيد فهم الشروط والأحكام وسياسة الخصوصية وتحذير المخاطر.",
     donateStrip1: "هل تساعدك نسخة FREE؟ ادعمنا بتبرع للحفاظ على هذا الكاشف فعالا.",
     donateStrip2: "كل تبرع يساعد على تحسين الإشارات وصيانة الأداة ودعم المبادرات الإيجابية.",
     donateStrip3: "إذا كنت تواصل استخدام نسخة FREE، ففكر في التبرع. دعمك يجعل التطوير ممكنا.",
@@ -1851,6 +2068,280 @@ function setText(id, text) {
   if (node) node.textContent = text;
 }
 
+function renderPrivacyPolicy() {
+  const policy = document.getElementById("privacyPolicy");
+  if (!policy) return;
+  const email = `<a href="mailto:gemradarai@gmail.com">gemradarai@gmail.com</a>`;
+  const content = {
+    es: `
+      <h2>Política de privacidad y uso de datos</h2>
+      <p><strong>Esta política explica cómo GemRadar AI recopila, utiliza y protege la información relacionada con el uso de esta página, las funciones FREE/PRO, soporte, pagos, donaciones y herramientas de análisis cripto.</strong></p>
+      <ul>
+        <li><strong>Información que podemos recibir:</strong> mensajes enviados por correo o por la caja de soporte, dirección de email si el usuario nos escribe, idioma seleccionado, watchlist, pins, estado FREE/PRO, intentos de activación, preferencias guardadas en el navegador y datos técnicos básicos generados por el hosting, el navegador o proveedores externos.</li>
+        <li><strong>Información que no solicitamos directamente:</strong> claves privadas, seed phrases, contraseñas de wallets, acceso a exchanges, números completos de tarjeta, cuentas bancarias, documentos de identidad, fondos del usuario ni autorización para operar activos.</li>
+        <li><strong>Pagos y donaciones:</strong> los pagos PRO, Lifetime o donaciones pueden procesarse mediante PayPal u otro proveedor externo. GemRadar AI no recibe ni almacena directamente los datos completos de tarjeta, banco o cuenta financiera del usuario. PayPal y cada procesador aplican sus propias políticas de privacidad, seguridad, verificación y retención.</li>
+        <li><strong>Uso de la información:</strong> responder preguntas, dar soporte, revisar activaciones, mantener preferencias locales, mejorar la herramienta, proteger contra abuso, conservar comunicaciones necesarias y cumplir obligaciones legales cuando correspondan.</li>
+        <li><strong>Datos guardados en el navegador:</strong> la página puede usar localStorage para recordar idioma, watchlist, pins, modo FREE/PRO, activación local, historial técnico de señales y preferencias. Estos datos permanecen en el dispositivo del usuario hasta que el usuario los borre desde su navegador o limpie los datos del sitio.</li>
+        <li><strong>APIs y terceros:</strong> GemRadar AI puede consultar datos públicos de mercado, liquidez, volumen, precios o tokens desde proveedores como Dexscreener, GitHub Pages, PayPal, servicios de correo y otros proveedores técnicos. Sus sitios, APIs y plataformas pueden recopilar datos conforme a sus propias políticas.</li>
+        <li><strong>No venta de datos:</strong> no vendemos, alquilamos ni intercambiamos información personal del usuario con terceros para marketing propio de terceros.</li>
+        <li><strong>Compartición limitada:</strong> podemos compartir datos solamente con proveedores necesarios para operar la página, procesar pagos, entregar soporte, proteger el servicio, cumplir la ley o responder solicitudes válidas de autoridades competentes.</li>
+        <li><strong>Seguridad:</strong> aplicamos medidas razonables para proteger la información recibida, pero ningún sistema, navegador, correo electrónico, proveedor externo, transmisión por internet o almacenamiento local puede garantizar seguridad absoluta.</li>
+        <li><strong>Retención:</strong> los mensajes de soporte pueden conservarse mientras sean necesarios para responder, resolver disputas, documentar pagos, prevenir abuso o cumplir obligaciones legales. Los datos de localStorage dependen del navegador del usuario. Los datos de pago son retenidos por el procesador correspondiente según sus reglas.</li>
+        <li><strong>Derechos y opciones:</strong> el usuario puede solicitar acceso, corrección o eliminación de comunicaciones personales enviadas a GemRadar AI cuando sea legalmente posible. También puede borrar datos locales desde el navegador y dejar de recibir mensajes promocionales escribiendo a soporte.</li>
+        <li><strong>Menores:</strong> la página no está dirigida a menores de 13 años y no buscamos recopilar información personal de menores. Si se detecta información de un menor, se tomarán medidas razonables para eliminarla cuando proceda.</li>
+        <li><strong>Visitantes internacionales:</strong> GemRadar AI puede operar desde El Salvador y usar proveedores internacionales. Al usar la página, el usuario entiende que cierta información puede procesarse en El Salvador, Estados Unidos u otros países donde operen los proveedores técnicos.</li>
+        <li><strong>Cambios:</strong> esta política puede actualizarse para reflejar cambios técnicos, legales, de proveedores o de funcionamiento. La versión publicada en la página será la aplicable al uso posterior.</li>
+      </ul>
+      <p><strong>Contacto oficial de privacidad, preguntas y soporte:</strong> ${email}</p>`,
+    en: `
+      <h2>Privacy and Data Use Policy</h2>
+      <p><strong>This policy explains how GemRadar AI collects, uses, and protects information related to this page, FREE/PRO features, support, payments, donations, and crypto analysis tools.</strong></p>
+      <ul>
+        <li><strong>Information we may receive:</strong> support emails or questions, the email address you use to contact us, selected language, watchlist, pins, FREE/PRO state, activation attempts, browser preferences, and basic technical data generated by hosting, browser, or external providers.</li>
+        <li><strong>Information we do not request directly:</strong> private keys, seed phrases, wallet passwords, exchange access, full card numbers, bank account numbers, identity documents, user funds, or permission to trade assets.</li>
+        <li><strong>Payments and donations:</strong> PRO, Lifetime, and donation payments may be processed by PayPal or another third-party provider. GemRadar AI does not directly receive or store full card, bank, or financial account details. Each processor applies its own privacy, security, verification, and retention rules.</li>
+        <li><strong>How we use information:</strong> to answer questions, provide support, review activations, keep local preferences, improve the tool, prevent abuse, retain necessary communications, and comply with legal obligations when applicable.</li>
+        <li><strong>Browser storage:</strong> the page may use localStorage to remember language, watchlist, pins, FREE/PRO mode, local activation, technical signal history, and preferences. These records remain on the user's device until the user clears site/browser data.</li>
+        <li><strong>APIs and third parties:</strong> GemRadar AI may query public market, liquidity, volume, price, or token data from providers such as Dexscreener, GitHub Pages, PayPal, email services, and technical providers. Those services may collect data under their own policies.</li>
+        <li><strong>No sale of data:</strong> we do not sell, rent, or trade personal information for third-party marketing.</li>
+        <li><strong>Limited sharing:</strong> data may be shared only with providers needed to operate the page, process payments, deliver support, protect the service, comply with law, or respond to valid authority requests.</li>
+        <li><strong>Security:</strong> reasonable safeguards are used, but no website, browser, email, external provider, internet transmission, or local storage method is absolutely secure.</li>
+        <li><strong>Retention:</strong> support messages may be retained as needed for replies, disputes, payment records, abuse prevention, or legal obligations. localStorage is controlled by the user's browser. Payment data is retained by the relevant processor.</li>
+        <li><strong>Choices and rights:</strong> users may request access, correction, or deletion of personal communications sent to GemRadar AI where legally possible, clear local data in the browser, and opt out of promotional messages by contacting support.</li>
+        <li><strong>Children:</strong> this page is not directed to children under 13 and we do not knowingly seek personal information from children.</li>
+        <li><strong>International visitors:</strong> GemRadar AI may operate from El Salvador and use international providers, so information may be processed in El Salvador, the United States, or other provider locations.</li>
+        <li><strong>Changes:</strong> this policy may be updated for technical, legal, provider, or operational changes. The published version applies to later use.</li>
+      </ul>
+      <p><strong>Official privacy, questions, and support contact:</strong> ${email}</p>`,
+    pt: `
+      <h2>Política de privacidade e uso de dados</h2>
+      <p><strong>Esta política explica como o GemRadar AI coleta, usa e protege informações relacionadas a esta página, recursos FREE/PRO, suporte, pagamentos, doações e ferramentas de análise cripto.</strong></p>
+      <ul>
+        <li><strong>Informações que podemos receber:</strong> mensagens de suporte, email usado para contato, idioma selecionado, watchlist, pins, estado FREE/PRO, tentativas de ativação, preferências do navegador e dados técnicos básicos de hospedagem, navegador ou provedores externos.</li>
+        <li><strong>Informações que não solicitamos diretamente:</strong> chaves privadas, seed phrases, senhas de carteira, acesso a exchanges, números completos de cartão, contas bancárias, documentos de identidade, fundos do usuário ou autorização para operar ativos.</li>
+        <li><strong>Pagamentos e doações:</strong> pagamentos PRO, Lifetime e doações podem ser processados pelo PayPal ou outro provedor externo. O GemRadar AI não recebe nem armazena diretamente dados completos de cartão, banco ou conta financeira.</li>
+        <li><strong>Uso das informações:</strong> responder perguntas, prestar suporte, revisar ativações, manter preferências locais, melhorar a ferramenta, prevenir abuso, conservar comunicações necessárias e cumprir obrigações legais quando aplicável.</li>
+        <li><strong>Armazenamento no navegador:</strong> a página pode usar localStorage para lembrar idioma, watchlist, pins, modo FREE/PRO, ativação local, histórico técnico de sinais e preferências. Esses dados permanecem no dispositivo até o usuário apagá-los.</li>
+        <li><strong>APIs e terceiros:</strong> o GemRadar AI pode consultar dados públicos de mercado, liquidez, volume, preço ou tokens em provedores como Dexscreener, GitHub Pages, PayPal, serviços de email e provedores técnicos, cada um com suas próprias políticas.</li>
+        <li><strong>Não vendemos dados:</strong> não vendemos, alugamos nem trocamos informações pessoais para marketing de terceiros.</li>
+        <li><strong>Compartilhamento limitado:</strong> dados podem ser compartilhados apenas com provedores necessários para operar a página, processar pagamentos, entregar suporte, proteger o serviço, cumprir a lei ou responder a solicitações válidas de autoridades.</li>
+        <li><strong>Segurança:</strong> usamos medidas razoáveis, mas nenhum site, navegador, email, provedor externo, transmissão pela internet ou armazenamento local é totalmente seguro.</li>
+        <li><strong>Retenção:</strong> mensagens de suporte podem ser mantidas enquanto necessário. Dados locais dependem do navegador do usuário. Dados de pagamento seguem as regras do processador.</li>
+        <li><strong>Direitos e escolhas:</strong> o usuário pode solicitar acesso, correção ou exclusão de comunicações pessoais quando legalmente possível, apagar dados locais no navegador e deixar de receber mensagens promocionais entrando em contato com o suporte.</li>
+        <li><strong>Menores:</strong> esta página não é dirigida a menores de 13 anos e não buscamos coletar dados pessoais de menores.</li>
+        <li><strong>Visitantes internacionais:</strong> o GemRadar AI pode operar a partir de El Salvador e usar provedores internacionais, portanto dados podem ser processados em El Salvador, Estados Unidos ou outros países.</li>
+        <li><strong>Alterações:</strong> esta política pode ser atualizada por mudanças técnicas, legais, de provedores ou de funcionamento.</li>
+      </ul>
+      <p><strong>Contato oficial de privacidade, perguntas e suporte:</strong> ${email}</p>`,
+    ar: `
+      <h2>Privacy and Data Use Policy</h2>
+      <p><strong>GemRadar AI uses this policy to explain what information may be handled when users access FREE/PRO features, support, payments, donations, and crypto analysis tools.</strong></p>
+      <ul>
+        <li><strong>Information we may receive:</strong> support messages, contact email, selected language, watchlist, pins, FREE/PRO state, activation attempts, browser preferences, and basic technical data from hosting, browser, or external providers.</li>
+        <li><strong>Information we do not request:</strong> private keys, seed phrases, wallet passwords, exchange access, full card numbers, bank accounts, identity documents, custody of funds, or permission to trade assets.</li>
+        <li><strong>Payments and donations:</strong> PayPal or another third-party processor may handle PRO, Lifetime, or donation payments. GemRadar AI does not directly store complete financial account details.</li>
+        <li><strong>Use:</strong> support, activation review, local preferences, service improvement, abuse prevention, necessary records, and legal compliance when applicable.</li>
+        <li><strong>Browser storage:</strong> localStorage may keep language, watchlist, pins, FREE/PRO mode, activation status, signal history, and preferences until the user clears browser/site data.</li>
+        <li><strong>Third parties:</strong> Dexscreener, GitHub Pages, PayPal, email services, and technical providers may process data under their own policies.</li>
+        <li><strong>No sale of data:</strong> GemRadar AI does not sell, rent, or trade personal information for third-party marketing.</li>
+        <li><strong>Security and retention:</strong> reasonable safeguards are used, but absolute security cannot be guaranteed. Support messages and payment records may be retained as needed; browser data is controlled by the user.</li>
+        <li><strong>Choices:</strong> users may request access, correction, or deletion of personal communications where legally possible, clear local browser data, and contact support to stop promotional messages.</li>
+        <li><strong>Children and international users:</strong> this page is not directed to children under 13. Information may be processed in El Salvador, the United States, or other provider locations.</li>
+        <li><strong>Changes:</strong> this policy may be updated, and the published version applies to later use.</li>
+      </ul>
+      <p><strong>Official privacy, questions, and support contact:</strong> ${email}</p>`
+  };
+  policy.innerHTML = content[currentLang] || content.es;
+}
+
+function renderLegalAddendum() {
+  const addendum = document.getElementById("legalAddendum");
+  if (!addendum) return;
+  const email = `<a href="mailto:gemradarai@gmail.com">gemradarai@gmail.com</a>`;
+  const content = {
+    es: `
+      <h2>Condiciones legales adicionales</h2>
+      <h3>1. Naturaleza del servicio</h3>
+      <p>GemRadar AI ofrece una herramienta informativa de análisis heurístico sobre datos públicos de mercado. No somos broker, exchange, asesor registrado, custodio, fiduciario, administrador de fondos, proveedor de señales garantizadas ni plataforma para ejecutar operaciones.</p>
+      <h3>2. Usuarios y jurisdicciones</h3>
+      <p>El usuario es responsable de confirmar si puede usar esta herramienta conforme a las leyes de su país, estado o jurisdicción. No debe usar GemRadar AI si su jurisdicción restringe análisis, pagos, activos digitales, criptomonedas, tokens, memecoins, derivados, promociones financieras o servicios similares.</p>
+      <h3>3. Impuestos y cumplimiento</h3>
+      <p>Todo usuario es responsable de sus reportes fiscales, obligaciones regulatorias, límites de inversión, restricciones personales, KYC/AML aplicables en sus plataformas externas y cualquier consecuencia legal derivada de sus propias decisiones.</p>
+      <h3>4. Enlaces, APIs y terceros</h3>
+      <p>Los enlaces a PayPal, Dexscreener, exploradores, proveedores de datos, imágenes, hosting, correos o sitios externos se ofrecen por conveniencia. GemRadar AI no controla sus cambios, comisiones, interrupciones, errores, políticas, decisiones de bloqueo, límites, disponibilidad, precios ni seguridad.</p>
+      <h3>5. Pagos, donaciones y acceso digital</h3>
+      <p>Los pagos o donaciones permiten apoyar el proyecto y/o desbloquear acceso digital informativo. No compran asesoría personalizada, rentabilidad, resultados, protección contra pérdidas, prioridad financiera ni garantía de detección. Los procesadores externos pueden aplicar comisiones, revisiones, retenciones o reglas propias.</p>
+      <h3>6. Reembolsos, disputas y activaciones</h3>
+      <p>Como el acceso es digital e inmediato, las solicitudes de reembolso se revisan caso por caso por soporte. Cualquier disputa, contracargo o uso abusivo puede provocar suspensión del acceso mientras se verifica el caso. Conserva comprobantes y comunícate por el contacto oficial.</p>
+      <h3>7. Uso aceptable</h3>
+      <p>Queda prohibido usar la página para fraude, scraping abusivo, ingeniería inversa no autorizada, reventa, clonación, manipulación de mercado, spam, automatización que dañe el servicio, eliminación de avisos legales, suplantación, phishing o cualquier actividad ilegal.</p>
+      <h3>8. Propiedad intelectual</h3>
+      <p>El diseño, textos, lógica, nombres, marca, compilación, metodología, estructura visual y contenido de GemRadar AI pertenecen a sus titulares, salvo recursos de terceros. No se concede licencia para copiar, vender, redistribuir o crear versiones derivadas sin autorización escrita.</p>
+      <h3>9. Disponibilidad y cambios</h3>
+      <p>La página puede cambiar, suspenderse, fallar, actualizar fuentes, limitar funciones FREE/PRO, modificar textos, agregar filtros, retirar enlaces o ajustar motores internos sin aviso previo cuando sea necesario para seguridad, cumplimiento o mejora técnica.</p>
+      <h3>10. Independencia y aceptación</h3>
+      <p>Al usar la página, marcar el checkbox, pagar, donar, activar PRO o consultar señales, aceptas que tus decisiones son independientes y que ninguna lectura del sistema elimina el riesgo de pérdida. Contacto oficial: ${email}</p>`,
+    en: `
+      <h2>Additional Legal Conditions</h2>
+      <h3>1. Nature of the service</h3>
+      <p>GemRadar AI provides an informational heuristic analysis tool based on public market data. We are not a broker, exchange, registered adviser, custodian, fiduciary, fund manager, guaranteed signal provider, or trading execution platform.</p>
+      <h3>2. Users and jurisdictions</h3>
+      <p>Users are responsible for confirming whether they may use this tool under the laws of their country, state, or jurisdiction. Do not use GemRadar AI where crypto analysis, payments, digital assets, tokens, memecoins, derivatives, financial promotions, or similar services are restricted.</p>
+      <h3>3. Taxes and compliance</h3>
+      <p>Each user is responsible for tax reporting, regulatory obligations, investment limits, personal restrictions, KYC/AML requirements on external platforms, and legal consequences from their own decisions.</p>
+      <h3>4. Links, APIs, and third parties</h3>
+      <p>Links to PayPal, Dexscreener, explorers, data providers, images, hosting, email, or third-party sites are provided for convenience. GemRadar AI does not control their fees, interruptions, errors, policies, availability, prices, or security.</p>
+      <h3>5. Payments, donations, and digital access</h3>
+      <p>Payments or donations support the project and/or unlock informational digital access. They do not purchase personalized advice, returns, protection against losses, priority financial treatment, or guaranteed detection.</p>
+      <h3>6. Refunds, disputes, and activations</h3>
+      <p>Because access is digital and immediate, refund requests are reviewed case by case by support. Disputes, chargebacks, or abusive use may suspend access while the case is reviewed.</p>
+      <h3>7. Acceptable use</h3>
+      <p>The page may not be used for fraud, abusive scraping, unauthorized reverse engineering, resale, cloning, market manipulation, spam, damaging automation, removal of legal notices, impersonation, phishing, or unlawful activity.</p>
+      <h3>8. Intellectual property</h3>
+      <p>The design, text, logic, name, brand, compilation, methodology, visual structure, and content of GemRadar AI belong to their owners except third-party resources. No license is granted to copy, sell, redistribute, or create derivative versions without written authorization.</p>
+      <h3>9. Availability and changes</h3>
+      <p>The page may change, pause, fail, update sources, limit FREE/PRO features, modify text, add filters, remove links, or adjust engines when needed for security, compliance, or technical improvement.</p>
+      <h3>10. Independent decision and acceptance</h3>
+      <p>By using the page, checking the consent box, paying, donating, activating PRO, or reviewing signals, you accept that all decisions are independent and that no system reading removes loss risk. Official contact: ${email}</p>`,
+    pt: `
+      <h2>Condições legais adicionais</h2>
+      <h3>1. Natureza do serviço</h3>
+      <p>GemRadar AI oferece uma ferramenta informativa de análise heurística baseada em dados públicos de mercado. Não somos corretora, exchange, assessor registrado, custodiante, fiduciário, gestor de fundos, provedor de sinais garantidos ou plataforma de execução de operações.</p>
+      <h3>2. Usuários e jurisdições</h3>
+      <p>O usuário é responsável por confirmar se pode usar esta ferramenta conforme as leis de seu país, estado ou jurisdição. Não use GemRadar AI se houver restrições aplicáveis a cripto, pagamentos, ativos digitais, tokens, memecoins, derivativos ou promoções financeiras.</p>
+      <h3>3. Impostos e conformidade</h3>
+      <p>Cada usuário é responsável por impostos, obrigações regulatórias, limites pessoais, restrições, requisitos KYC/AML em plataformas externas e consequências legais de suas próprias decisões.</p>
+      <h3>4. Links, APIs e terceiros</h3>
+      <p>Links para PayPal, Dexscreener, exploradores, provedores de dados, imagens, hospedagem, email ou sites externos são fornecidos por conveniência. GemRadar AI não controla taxas, falhas, políticas, disponibilidade, preços ou segurança desses terceiros.</p>
+      <h3>5. Pagamentos, doações e acesso digital</h3>
+      <p>Pagamentos ou doações apoiam o projeto e/ou desbloqueiam acesso digital informativo. Não compram conselho personalizado, rentabilidade, proteção contra perdas ou detecção garantida.</p>
+      <h3>6. Reembolsos, disputas e ativações</h3>
+      <p>Como o acesso é digital e imediato, pedidos de reembolso são revisados caso a caso pelo suporte. Disputas, chargebacks ou uso abusivo podem suspender o acesso durante a verificação.</p>
+      <h3>7. Uso aceitável</h3>
+      <p>É proibido usar a página para fraude, scraping abusivo, engenharia reversa não autorizada, revenda, clonagem, manipulação de mercado, spam, automação prejudicial, remoção de avisos legais, phishing ou atividade ilegal.</p>
+      <h3>8. Propriedade intelectual</h3>
+      <p>Design, textos, lógica, nome, marca, compilação, metodologia, estrutura visual e conteúdo pertencem aos seus titulares, salvo recursos de terceiros. Não há licença para copiar, vender, redistribuir ou criar derivados sem autorização escrita.</p>
+      <h3>9. Disponibilidade e alterações</h3>
+      <p>A página pode mudar, pausar, falhar, atualizar fontes, limitar FREE/PRO, modificar textos, adicionar filtros, remover links ou ajustar motores internos por segurança, conformidade ou melhoria técnica.</p>
+      <h3>10. Decisão independente e aceitação</h3>
+      <p>Ao usar a página, marcar o checkbox, pagar, doar, ativar PRO ou consultar sinais, você aceita que suas decisões são independentes e que nenhuma leitura elimina o risco de perda. Contato oficial: ${email}</p>`,
+    ar: `
+      <h2>Additional Legal Conditions</h2>
+      <h3>1. Nature of the service</h3>
+      <p>GemRadar AI is an informational heuristic analysis tool based on public market data. It is not a broker, exchange, adviser, custodian, fiduciary, fund manager, guaranteed signal provider, or trading platform.</p>
+      <h3>2. Jurisdictions and compliance</h3>
+      <p>Users must confirm that use is lawful in their own country, state, or jurisdiction and must not use the page where crypto analysis, payments, digital assets, tokens, memecoins, derivatives, or financial promotions are restricted.</p>
+      <h3>3. Taxes and responsibility</h3>
+      <p>Users are responsible for taxes, regulations, personal limits, KYC/AML duties on external platforms, and legal consequences of their own decisions.</p>
+      <h3>4. Third parties</h3>
+      <p>PayPal, Dexscreener, explorers, hosting, email, data providers, and external sites operate under their own rules. GemRadar AI does not control their fees, interruptions, policies, prices, or security.</p>
+      <h3>5. Payments and digital access</h3>
+      <p>Payments or donations support the project and/or unlock informational digital access. They do not buy personalized advice, returns, loss protection, or guaranteed detection.</p>
+      <h3>6. Refunds and disputes</h3>
+      <p>Because access is digital and immediate, refunds are reviewed case by case. Disputes, chargebacks, or abusive use may suspend access during review.</p>
+      <h3>7. Acceptable use and intellectual property</h3>
+      <p>Fraud, abusive scraping, unauthorized reverse engineering, resale, cloning, market manipulation, spam, damaging automation, phishing, and illegal activity are prohibited. Content, design, brand, logic, and methodology may not be copied or redistributed without written permission.</p>
+      <h3>8. Changes and acceptance</h3>
+      <p>The page may change, pause, fail, update sources, limit FREE/PRO, remove links, or adjust engines for security, compliance, or technical improvement. By using the page, checking consent, paying, donating, or activating PRO, users accept that decisions are independent and losses remain possible. Contact: ${email}</p>`
+  };
+  addendum.innerHTML = content[currentLang] || content.es;
+}
+
+function renderLegalTerms() {
+  const oldLegal = document.getElementById("legalTerms");
+  if (oldLegal) oldLegal.style.display = "none";
+  const legal = document.getElementById("legalTermsFull");
+  if (!legal) return;
+  const email = `<a href="mailto:gemradarai@gmail.com">gemradarai@gmail.com</a>`;
+  const copy = currentLang === "en"
+    ? "© 2025 GemRadar AI - Crypto Gem Detector, analysis, alerts, and informational tools. All rights reserved. Total or partial reproduction, copying, sale, distribution, modification, or commercial exploitation without written authorization is prohibited."
+    : currentLang === "pt"
+      ? "© 2025 GemRadar AI - Detector de Gemas Cripto, análises, alertas e ferramentas informativas. Todos os direitos reservados. É proibida a reprodução total ou parcial, cópia, venda, distribuição, modificação ou exploração comercial sem autorização escrita."
+      : currentLang === "ar"
+        ? "© 2025 GemRadar AI - كاشف فرص العملات، التحليل، التنبيهات والأدوات المعلوماتية. جميع الحقوق محفوظة. يحظر النسخ أو البيع أو التوزيع أو التعديل أو الاستغلال التجاري كليا أو جزئيا دون إذن كتابي."
+        : "© 2025 GemRadar AI - Detector de Gemas Cripto, análisis, alertas y herramientas informativas. Todos los derechos reservados. Queda prohibida la reproducción total o parcial, copia, venta, distribución, modificación o explotación comercial sin autorización escrita.";
+
+  const content = {
+    es: `
+      <h2>Términos ampliados, condiciones de uso y exención de responsabilidad</h2>
+      <p><strong>GemRadar AI es una herramienta informativa, educativa y de análisis heurístico.</strong> Las señales, rankings, lecturas, alertas, puntuaciones, métricas, filtros, etiquetas, gráficos, resultados y cualquier información mostrada no constituyen asesoría financiera, asesoría de inversión, asesoría legal, asesoría fiscal, recomendación personalizada, oferta de compra, oferta de venta, intermediación, administración de fondos, gestión de cartera ni invitación a operar con criptomonedas, tokens, valores, derivados u otros activos.</p>
+      <p><strong>Decisión independiente del usuario.</strong> Cada usuario es el único responsable de investigar, verificar, decidir, comprar, vender, mantener, transferir o ignorar cualquier activo.</p>
+      <ul>
+        <li><strong>Sin garantías:</strong> no garantizamos ganancias, rentabilidad, exactitud absoluta, disponibilidad permanente, detección perfecta, prevención de fraudes, continuidad del servicio ni resultados futuros.</li>
+        <li><strong>Riesgo total:</strong> criptomonedas, memecoins, micro caps, pools nuevos y tokens emergentes pueden ser extremadamente volátiles, ilíquidos, especulativos, manipulables y pueden perder el 100% de su valor.</li>
+        <li><strong>No predicción infalible:</strong> Early, Smart Money, Riesgo, Ranking, Máxima Alerta y Micro Gems son cálculos heurísticos, no probabilidades científicamente calibradas.</li>
+        <li><strong>Datos de terceros:</strong> APIs, fuentes públicas o mercados pueden fallar, retrasarse, cambiar, duplicarse, estar incompletos o ser incorrectos.</li>
+        <li><strong>Seguridad no garantizada:</strong> esta herramienta no sustituye auditorías de contrato, honeypot, impuestos, ownership, mint/freeze authority, liquidez bloqueada, holders ni análisis legal.</li>
+        <li><strong>Pagos y donaciones:</strong> PRO/Lifetime da acceso a funciones informativas; no compra rendimientos, señales garantizadas ni asesoría personalizada.</li>
+        <li><strong>Sin custodia:</strong> GemRadar AI no custodia fondos, no solicita claves privadas, no ejecuta compras o ventas automáticas y no administra dinero.</li>
+        <li><strong>Uso prohibido:</strong> queda prohibido copiar, clonar, revender, redistribuir, automatizar abusivamente o explotar comercialmente esta herramienta sin autorización escrita.</li>
+        <li><strong>Limitación de responsabilidad:</strong> GemRadar AI y sus responsables no serán responsables por pérdidas directas, indirectas, tecnológicas, fiscales, legales, comerciales o financieras derivadas del uso de la herramienta.</li>
+        <li><strong>Indemnidad:</strong> el usuario acepta mantener indemne a GemRadar AI frente a reclamos, cargos, contracargos, daños, disputas o pérdidas derivadas del uso de la página.</li>
+        <li><strong>Aceptación:</strong> al usar FREE, PRO, rankings, alertas, pagos, donaciones, formularios o enlaces, aceptas estos términos y el aviso de riesgo.</li>
+      </ul>
+      <p><strong>Advertencia práctica:</strong> ningún sistema serio puede garantizar ganancias ni eliminar el riesgo. Nunca arriesgues dinero que no puedas permitirte perder.</p>
+      <p>Contacto y soporte oficial: ${email}</p>`,
+    en: `
+      <h2>Expanded Terms, Conditions of Use, and Disclaimer</h2>
+      <p><strong>GemRadar AI is an informational, educational, heuristic analysis tool.</strong> Signals, rankings, readings, alerts, scores, metrics, filters, labels, charts, outputs, and any information displayed are not financial advice, investment advice, legal advice, tax advice, personalized recommendations, offers to buy or sell, brokerage, fund management, portfolio management, or an invitation to trade crypto assets, tokens, securities, derivatives, or any other assets.</p>
+      <p><strong>Independent user decision.</strong> Each user is solely responsible for researching, verifying, deciding, buying, selling, holding, transferring, or ignoring any asset.</p>
+      <ul>
+        <li><strong>No guarantees:</strong> we do not guarantee profits, returns, absolute accuracy, permanent availability, perfect detection, fraud prevention, uninterrupted service, or future results.</li>
+        <li><strong>Total risk:</strong> cryptocurrencies, memecoins, micro caps, new pools, and emerging tokens can be extremely volatile, illiquid, speculative, manipulated, and may lose 100% of their value.</li>
+        <li><strong>No infallible prediction:</strong> Early, Smart Money, Risk, Ranking, Max Alert, and Micro Gems are heuristic calculations, not scientifically calibrated probabilities.</li>
+        <li><strong>Third-party data:</strong> APIs, public sources, or markets may fail, lag, change, duplicate, be incomplete, or be incorrect.</li>
+        <li><strong>No security guarantee:</strong> this tool does not replace contract audits, honeypot checks, taxes, ownership, mint/freeze authority, locked liquidity, holder review, or legal analysis.</li>
+        <li><strong>Payments and donations:</strong> PRO/Lifetime grants access to informational features; it does not purchase returns, guaranteed signals, or personalized advice.</li>
+        <li><strong>No custody:</strong> GemRadar AI does not custody funds, request private keys, execute automatic buys/sells, or manage user money.</li>
+        <li><strong>Prohibited use:</strong> copying, cloning, reselling, redistributing, abusive automation, or commercial exploitation without written authorization is prohibited.</li>
+        <li><strong>Limitation of liability:</strong> GemRadar AI and its responsible parties are not liable for direct, indirect, technological, tax, legal, commercial, or financial losses arising from use of the tool.</li>
+        <li><strong>Indemnity:</strong> the user agrees to hold GemRadar AI harmless from claims, charges, chargebacks, damages, disputes, or losses arising from use of the page.</li>
+        <li><strong>Acceptance:</strong> by using FREE, PRO, rankings, alerts, payments, donations, forms, or links, you accept these terms and risk notice.</li>
+      </ul>
+      <p><strong>Practical warning:</strong> no serious system can guarantee profits or remove risk. Never risk money you cannot afford to lose.</p>
+      <p>Official contact and support: ${email}</p>`,
+    pt: `
+      <h2>Termos ampliados, condições de uso e isenção de responsabilidade</h2>
+      <p><strong>GemRadar AI é uma ferramenta informativa, educativa e de análise heurística.</strong> Sinais, rankings, leituras, alertas, pontuações, métricas, filtros, etiquetas, gráficos, resultados e qualquer informação exibida não constituem assessoria financeira, investimento, jurídica, fiscal, recomendação personalizada, oferta de compra ou venda, intermediação, gestão de fundos, gestão de carteira ou convite para operar criptoativos, tokens, valores, derivativos ou outros ativos.</p>
+      <p><strong>Decisão independente do usuário.</strong> Cada usuário é o único responsável por pesquisar, verificar, decidir, comprar, vender, manter, transferir ou ignorar qualquer ativo.</p>
+      <ul>
+        <li><strong>Sem garantias:</strong> não garantimos lucros, rentabilidade, exatidão absoluta, disponibilidade permanente, detecção perfeita, prevenção de fraudes, continuidade do serviço ou resultados futuros.</li>
+        <li><strong>Risco total:</strong> criptomoedas, memecoins, micro caps, pools novos e tokens emergentes podem ser extremamente voláteis, ilíquidos, especulativos, manipuláveis e podem perder 100% do valor.</li>
+        <li><strong>Sem previsão infalível:</strong> Early, Smart Money, Risco, Ranking, Alerta Máximo e Micro Gems são cálculos heurísticos, não probabilidades cientificamente calibradas.</li>
+        <li><strong>Dados de terceiros:</strong> APIs, fontes públicas ou mercados podem falhar, atrasar, mudar, duplicar, estar incompletos ou incorretos.</li>
+        <li><strong>Segurança não garantida:</strong> esta ferramenta não substitui auditorias de contrato, honeypot, impostos, ownership, mint/freeze authority, liquidez bloqueada, holders ou análise legal.</li>
+        <li><strong>Pagamentos e doações:</strong> PRO/Lifetime dá acesso a funções informativas; não compra rendimentos, sinais garantidos ou assessoria personalizada.</li>
+        <li><strong>Sem custódia:</strong> GemRadar AI não guarda fundos, não solicita chaves privadas, não executa compras/vendas automáticas e não administra dinheiro.</li>
+        <li><strong>Uso proibido:</strong> é proibido copiar, clonar, revender, redistribuir, automatizar abusivamente ou explorar comercialmente esta ferramenta sem autorização escrita.</li>
+        <li><strong>Limitação de responsabilidade:</strong> GemRadar AI e seus responsáveis não respondem por perdas diretas, indiretas, tecnológicas, fiscais, legais, comerciais ou financeiras decorrentes do uso da ferramenta.</li>
+        <li><strong>Indenidade:</strong> o usuário aceita manter GemRadar AI isento de reclamações, cobranças, chargebacks, danos, disputas ou perdas decorrentes do uso da página.</li>
+        <li><strong>Aceitação:</strong> ao usar FREE, PRO, rankings, alertas, pagamentos, doações, formulários ou links, você aceita estes termos e o aviso de risco.</li>
+      </ul>
+      <p><strong>Aviso prático:</strong> nenhum sistema sério pode garantir lucros ou eliminar risco. Nunca arrisque dinheiro que você não pode perder.</p>
+      <p>Contato e suporte oficial: ${email}</p>`,
+    ar: `
+      <h2>الشروط الموسعة، شروط الاستخدام وإخلاء المسؤولية</h2>
+      <p><strong>GemRadar AI أداة معلوماتية وتعليمية تعتمد على تحليل إرشادي.</strong> الإشارات، التصنيفات، القراءات، التنبيهات، النقاط، المقاييس، المرشحات، الرسوم والنتائج لا تعتبر نصيحة مالية أو استثمارية أو قانونية أو ضريبية أو توصية شخصية أو عرض شراء أو بيع أو إدارة أموال أو دعوة للتداول.</p>
+      <p><strong>قرار مستقل من المستخدم.</strong> كل مستخدم مسؤول وحده عن البحث والتحقق واتخاذ قرار الشراء أو البيع أو الاحتفاظ أو النقل أو تجاهل أي أصل.</p>
+      <ul>
+        <li><strong>لا ضمانات:</strong> لا نضمن الأرباح أو العوائد أو الدقة المطلقة أو التوفر الدائم أو الكشف المثالي أو منع الاحتيال أو النتائج المستقبلية.</li>
+        <li><strong>مخاطر كاملة:</strong> العملات الرقمية والميم كوينز والمشاريع الصغيرة والسيولة الجديدة قد تكون شديدة التقلب وقليلة السيولة وقابلة للتلاعب وقد تفقد 100% من قيمتها.</li>
+        <li><strong>ليست تنبؤا مضمونا:</strong> Early وSmart Money وRisk وRanking وMax Alert وMicro Gems حسابات إرشادية وليست احتمالات علمية مؤكدة.</li>
+        <li><strong>بيانات طرف ثالث:</strong> قد تتأخر أو تفشل أو تتغير أو تكون ناقصة أو غير صحيحة.</li>
+        <li><strong>لا ضمان أمني:</strong> الأداة لا تغني عن تدقيق العقد أو فحص honeypot أو الضرائب أو الملكية أو صلاحيات mint/freeze أو السيولة المقفلة أو تحليل holders أو التحليل القانوني.</li>
+        <li><strong>المدفوعات والتبرعات:</strong> PRO/Lifetime يمنح وصولا لميزات معلوماتية فقط ولا يضمن عوائد أو إشارات مضمونة أو نصائح شخصية.</li>
+        <li><strong>لا حفظ أموال:</strong> GemRadar AI لا تحفظ أموال المستخدمين ولا تطلب مفاتيح خاصة ولا تنفذ عمليات شراء أو بيع آلية ولا تدير أموالا.</li>
+        <li><strong>استخدام محظور:</strong> يمنع النسخ أو الاستنساخ أو إعادة البيع أو إعادة التوزيع أو التشغيل الآلي المسيء أو الاستغلال التجاري دون إذن كتابي.</li>
+        <li><strong>تحديد المسؤولية:</strong> لا تتحمل GemRadar AI أو مسؤولوها أي خسائر مباشرة أو غير مباشرة أو تقنية أو ضريبية أو قانونية أو تجارية أو مالية ناتجة عن استخدام الأداة.</li>
+        <li><strong>إبراء وتعويض:</strong> يوافق المستخدم على حماية GemRadar AI من المطالبات والرسوم والاعتراضات والأضرار والنزاعات والخسائر الناتجة عن استخدام الصفحة.</li>
+        <li><strong>القبول:</strong> باستخدام FREE أو PRO أو التصنيفات أو التنبيهات أو المدفوعات أو التبرعات أو النماذج أو الروابط، تقبل هذه الشروط وتحذير المخاطر.</li>
+      </ul>
+      <p><strong>تحذير عملي:</strong> لا يوجد نظام جاد يضمن الأرباح أو يزيل المخاطر. لا تخاطر بأموال لا يمكنك تحمل خسارتها.</p>
+      <p>التواصل والدعم الرسمي: ${email}</p>`
+  };
+  legal.innerHTML = `${content[currentLang] || content.es}<div class="legal-copy">${copy}</div>`;
+}
+
 function setLanguage(lang) {
   currentLang = translations[lang] ? lang : "es";
   localStorage.setItem("gemradar_lang", currentLang);
@@ -1889,11 +2380,20 @@ function setLanguage(lang) {
   setText("donateTitle", tx("donateTitle"));
   setText("donateNotice", tx("donateNotice"));
   setText("donateCta", tx("donateCta"));
+  setText("supportTitle", tx("supportTitle"));
+  setText("supportText", tx("supportText"));
+  setText("supportSubmit", tx("supportSubmit"));
+  setText("termsConsentLabel", tx("termsConsentLabel"));
   setText("donateStrip1", tx("donateStrip1"));
   setText("donateStrip2", tx("donateStrip2"));
   setText("donateStrip3", tx("donateStrip3"));
   el.searchInput.placeholder = tx("searchPlaceholder");
   el.pinInput.placeholder = tx("pinPlaceholder");
+  el.supportQuestion.placeholder = tx("supportPlaceholder");
+  updatePaymentConsentUI();
+  renderPrivacyPolicy();
+  renderLegalAddendum();
+  renderLegalTerms();
 
   const freeLocks = document.querySelectorAll(".only-free .locked-panel");
   if (freeLocks[0]) freeLocks[0].textContent = tx("maxLocked1");
@@ -1957,6 +2457,21 @@ function setPaymentStarted(value, reason, plan) {
     button.textContent = paymentStarted ? tx("completeActivation") : base;
   });
   if (reason) el.status.textContent = reason;
+}
+
+function updatePaymentConsentUI() {
+  if (el.termsConsent) el.termsConsent.checked = termsAccepted;
+  document.querySelectorAll(".pro-action, a[href*='paypal.com']").forEach(node => {
+    node.classList.toggle("paypal-locked", !termsAccepted);
+    node.setAttribute("aria-disabled", String(!termsAccepted));
+  });
+}
+
+function requirePaymentConsent() {
+  if (termsAccepted) return true;
+  if (el.status) el.status.textContent = tx("termsRequired");
+  if (el.termsConsent) el.termsConsent.focus();
+  return false;
 }
 
 function noteApiFailure() {
@@ -2445,6 +2960,7 @@ function toggleAuto() {
 
 el.proActions.forEach(button => {
   button.addEventListener("click", () => {
+    if (!requirePaymentConsent()) return;
     if (!paymentStarted || paymentPlan !== button.dataset.plan) {
       const planName = button.dataset.plan === "lifetime" ? tx("planLifetime") : tx("planComplete");
       setPaymentStarted(true, tx("paypalOpened").replace("{plan}", planName), button.dataset.plan);
@@ -2454,6 +2970,20 @@ el.proActions.forEach(button => {
     setPro(true, tx("proActivated"));
   });
 });
+document.querySelectorAll("a[href*='paypal.com']").forEach(link => {
+  link.addEventListener("click", event => {
+    if (requirePaymentConsent()) return;
+    event.preventDefault();
+  });
+});
+if (el.termsConsent) {
+  el.termsConsent.addEventListener("change", event => {
+    termsAccepted = event.target.checked;
+    if (termsAccepted) localStorage.setItem(TERMS_ACCEPTED_KEY, "yes");
+    else localStorage.removeItem(TERMS_ACCEPTED_KEY);
+    updatePaymentConsentUI();
+  });
+}
 el.updateBtn.addEventListener("click", runDetector);
 el.autoBtn.addEventListener("click", toggleAuto);
 el.langSelect.addEventListener("change", event => setLanguage(event.target.value));
@@ -2468,6 +2998,13 @@ document.getElementById("clearPinsBtn").addEventListener("click", () => {
   pinned = [];
   localStorage.setItem("gemradar_pinned", JSON.stringify(pinned));
   render();
+});
+el.supportForm.addEventListener("submit", event => {
+  event.preventDefault();
+  const question = el.supportQuestion.value.trim();
+  const subject = encodeURIComponent(tx("supportSubject"));
+  const body = encodeURIComponent(`${question || tx("supportPlaceholder")}\n\n${tx("supportEmailFooter")}`);
+  window.location.href = `mailto:gemradarai@gmail.com?subject=${subject}&body=${body}`;
 });
 
 setLanguage(currentLang);
