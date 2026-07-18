@@ -3028,19 +3028,18 @@ el.supportForm.addEventListener("submit", async event => {
   }
   el.status.textContent = tx("supportSending");
   try {
+    const payload = new FormData();
+    payload.append("name", "Visitante GemRadar");
+    payload.append("email", "");
+    payload.append("message", question);
+    payload.append("page", location.href);
+    payload.append("lang", currentLang);
+    payload.append("userAgent", navigator.userAgent);
+    payload.append("sentAt", new Date().toISOString());
     await fetch(SUPPORT_SCRIPT_URL, {
       method: "POST",
       mode: "no-cors",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({
-        name: "Visitante GemRadar",
-        email: "",
-        message: question,
-        page: location.href,
-        lang: currentLang,
-        userAgent: navigator.userAgent,
-        sentAt: new Date().toISOString()
-      })
+      body: payload
     });
     el.supportQuestion.value = "";
     el.status.textContent = tx("supportSent");
