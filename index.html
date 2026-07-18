@@ -917,6 +917,7 @@ const PAYMENT_STARTED_KEY = "gemradar_paypal_payment_started";
 const PAYMENT_PLAN_KEY = "gemradar_paypal_payment_plan";
 const ACTIVE_PLAN_KEY = "gemradar_active_plan";
 const TERMS_ACCEPTED_KEY = "gemradar_terms_accepted";
+const SUPPORT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxBIdrNV6O8tQH8IFYHxrKL8HH2AiOiE7bS-fbOsEL8YRBVH_GPVLfpGIsOxYceR8lqfQ/exec";
 let tokens = [];
 let pinned = JSON.parse(localStorage.getItem("gemradar_pinned") || "[]");
 let auto = false;
@@ -1109,6 +1110,9 @@ const translations = {
     supportSubmit: "Enviar pregunta a soporte",
     supportSubject: "Pregunta de soporte GemRadar AI",
     supportEmailFooter: "Contacto y soporte: gemradarai@gmail.com",
+    supportSending: "Enviando mensaje a soporte...",
+    supportSent: "Mensaje enviado correctamente a gemradarai@gmail.com.",
+    supportFallback: "No se pudo enviar automático. Se abrirá tu correo como respaldo.",
     termsConsentLabel: "Antes de pagar o donar por PayPal, debo marcar esta casilla para confirmar que leí y entendí los términos, condiciones, política de privacidad y aviso de riesgo. Acepto que GemRadar AI no es consejo financiero.",
     termsRequired: "Antes de continuar a PayPal debes marcar que has entendido los términos, condiciones, política de privacidad y aviso de riesgo.",
     donateStrip1: "¿La versión FREE te está sirviendo? Apóyanos con una donación para mantener este detector activo.",
@@ -1190,6 +1194,9 @@ const translations = {
     supportSubmit: "Send question to support",
     supportSubject: "GemRadar AI support question",
     supportEmailFooter: "Contact and support: gemradarai@gmail.com",
+    supportSending: "Sending message to support...",
+    supportSent: "Message sent successfully to gemradarai@gmail.com.",
+    supportFallback: "Automatic sending failed. Your email app will open as fallback.",
     termsConsentLabel: "Before paying or donating through PayPal, I must check this box to confirm that I read and understood the terms, conditions, privacy policy, and risk notice. I accept that GemRadar AI is not financial advice.",
     termsRequired: "Before continuing to PayPal, you must confirm that you understand the terms, conditions, privacy policy, and risk notice.",
     donateStrip1: "Is the FREE version helping you? Support us with a donation to keep this detector active.",
@@ -1271,6 +1278,9 @@ const translations = {
     supportSubmit: "Enviar pergunta ao suporte",
     supportSubject: "Pergunta de suporte GemRadar AI",
     supportEmailFooter: "Contato e suporte: gemradarai@gmail.com",
+    supportSending: "Enviando mensagem ao suporte...",
+    supportSent: "Mensagem enviada corretamente para gemradarai@gmail.com.",
+    supportFallback: "Não foi possível enviar automaticamente. Seu email abrirá como reserva.",
     termsConsentLabel: "Antes de pagar ou doar pelo PayPal, devo marcar esta caixa para confirmar que li e entendi os termos, condições, política de privacidade e aviso de risco. Aceito que o GemRadar AI não é conselho financeiro.",
     termsRequired: "Antes de continuar para o PayPal, você deve confirmar que entendeu os termos, condições, política de privacidade e aviso de risco.",
     donateStrip1: "A versão FREE está ajudando você? Apoie-nos com uma doação para manter este detector ativo.",
@@ -1352,6 +1362,9 @@ const translations = {
     supportSubmit: "إرسال السؤال إلى الدعم",
     supportSubject: "سؤال دعم GemRadar AI",
     supportEmailFooter: "التواصل والدعم: gemradarai@gmail.com",
+    supportSending: "جار إرسال الرسالة إلى الدعم...",
+    supportSent: "تم إرسال الرسالة بنجاح إلى gemradarai@gmail.com.",
+    supportFallback: "فشل الإرسال التلقائي. سيتم فتح البريد الإلكتروني كخيار احتياطي.",
     termsConsentLabel: "قبل الدفع أو التبرع عبر PayPal، يجب تحديد هذا المربع لتأكيد قراءة وفهم الشروط والأحكام وسياسة الخصوصية وتحذير المخاطر. أوافق على أن GemRadar AI ليس نصيحة مالية.",
     termsRequired: "قبل المتابعة إلى PayPal، يجب تأكيد فهم الشروط والأحكام وسياسة الخصوصية وتحذير المخاطر.",
     donateStrip1: "هل تساعدك نسخة FREE؟ ادعمنا بتبرع للحفاظ على هذا الكاشف فعالا.",
@@ -2999,12 +3012,43 @@ document.getElementById("clearPinsBtn").addEventListener("click", () => {
   localStorage.setItem("gemradar_pinned", JSON.stringify(pinned));
   render();
 });
-el.supportForm.addEventListener("submit", event => {
-  event.preventDefault();
-  const question = el.supportQuestion.value.trim();
+function openSupportEmailFallback(question) {
   const subject = encodeURIComponent(tx("supportSubject"));
   const body = encodeURIComponent(`${question || tx("supportPlaceholder")}\n\n${tx("supportEmailFooter")}`);
   window.location.href = `mailto:gemradarai@gmail.com?subject=${subject}&body=${body}`;
+}
+
+el.supportForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  const question = el.supportQuestion.value.trim();
+  if (!question) {
+    el.status.textContent = tx("supportPlaceholder");
+    el.supportQuestion.focus();
+    return;
+  }
+  el.status.textContent = tx("supportSending");
+  try {
+    await fetch(SUPPORT_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        name: "Visitante GemRadar",
+        email: "",
+        message: question,
+        page: location.href,
+        lang: currentLang,
+        userAgent: navigator.userAgent,
+        sentAt: new Date().toISOString()
+      })
+    });
+    el.supportQuestion.value = "";
+    el.status.textContent = tx("supportSent");
+  } catch (error) {
+    console.warn("Support auto-send failed", error);
+    el.status.textContent = tx("supportFallback");
+    openSupportEmailFallback(question);
+  }
 });
 
 setLanguage(currentLang);
