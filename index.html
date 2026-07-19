@@ -350,6 +350,17 @@ select, input {
   font: inherit;
 }
 
+.support-feedback {
+  min-height: 22px;
+  margin: 0;
+  font-weight: 900;
+  color: var(--muted);
+}
+
+.support-feedback.success { color: var(--green); }
+.support-feedback.error { color: #ffb3b3; }
+.support-feedback.pending { color: var(--amber); }
+
 .legal-box {
   margin-top: 28px;
   padding: 18px;
@@ -855,6 +866,7 @@ tr:last-child td { border-bottom: 0; }
       <form class="support-form" id="supportForm">
         <textarea id="supportQuestion" placeholder="Escribe tu pregunta o comentario..."></textarea>
         <button class="btn" id="supportSubmit" type="submit">Enviar pregunta a soporte</button>
+        <p class="support-feedback" id="supportFeedback" aria-live="polite"></p>
       </form>
     </section>
 
@@ -1055,6 +1067,7 @@ const el = {
   countWhales: document.getElementById("countWhales"),
   supportForm: document.getElementById("supportForm"),
   supportQuestion: document.getElementById("supportQuestion"),
+  supportFeedback: document.getElementById("supportFeedback"),
   termsConsent: document.getElementById("termsConsent"),
   termsConsentLabel: document.getElementById("termsConsentLabel")
 };
@@ -3018,15 +3031,23 @@ function openSupportEmailFallback(question) {
   window.location.href = `mailto:gemradarai@gmail.com?subject=${subject}&body=${body}`;
 }
 
+function setSupportFeedback(message, type = "") {
+  if (!el.supportFeedback) return;
+  el.supportFeedback.textContent = message || "";
+  el.supportFeedback.className = `support-feedback ${type}`.trim();
+}
+
 el.supportForm.addEventListener("submit", async event => {
   event.preventDefault();
   const question = el.supportQuestion.value.trim();
   if (!question) {
     el.status.textContent = tx("supportPlaceholder");
+    setSupportFeedback(tx("supportPlaceholder"), "error");
     el.supportQuestion.focus();
     return;
   }
   el.status.textContent = tx("supportSending");
+  setSupportFeedback(tx("supportSending"), "pending");
   try {
     const payload = new FormData();
     payload.append("name", "Visitante GemRadar");
@@ -3043,9 +3064,11 @@ el.supportForm.addEventListener("submit", async event => {
     });
     el.supportQuestion.value = "";
     el.status.textContent = tx("supportSent");
+    setSupportFeedback(tx("supportSent"), "success");
   } catch (error) {
     console.warn("Support auto-send failed", error);
     el.status.textContent = tx("supportFallback");
+    setSupportFeedback(tx("supportFallback"), "error");
     openSupportEmailFallback(question);
   }
 });
